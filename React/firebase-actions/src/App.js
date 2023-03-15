@@ -7,6 +7,7 @@ import {
   collection,
   addDoc,
   deleteDoc,
+  updateDoc,
   doc,
 } from "firebase/firestore";
 
@@ -53,6 +54,13 @@ function App() {
       console.error(err);
     }
   };
+
+  const [updatedTitle, setUpdatedTitle] = useState("");
+  const updateMovieTitle = async (id) => {
+    const movieDoc = doc(db, "movies", id);
+    await updateDoc(movieDoc, { title: updatedTitle });
+    getMovieList();
+  };
   return (
     <div className="App">
       <Auth />
@@ -82,6 +90,13 @@ function App() {
             </h1>
             <p> Date: {movie.releaseDate}</p>
             <button onClick={() => deleteMovie(movie.id)}>Delete</button>
+            <input
+              placeholder="new title..."
+              onChange={(e) => setUpdatedTitle(e.target.value)}
+            />
+            <button onClick={() => updateMovieTitle(movie.id)}>
+              Update Title
+            </button>
           </div>
         ))}
       </div>
