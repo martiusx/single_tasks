@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 type FormElementProps = {
   onClickHandler: () => void;
-  task: string;
+  task: any;
 };
 
 const FormElement: FunctionComponent<FormElementProps> = ({

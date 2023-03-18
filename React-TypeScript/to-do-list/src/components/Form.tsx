@@ -1,25 +1,63 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FormElement from "./FormElement";
+import { db } from "../config/firebase";
+import {
+  getDocs,
+  collection,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 
 const Form = () => {
-  const [tasks, setTasks] = useState<string[]>([]);
-  let newTask: string = "";
+  const [tasks, setTasks] = useState<any>([]);
+  const [tasksId, setTasksId] = useState<any>("");
+  const [newTasks, setNewTasks] = useState("");
 
-  const addTask = (e: any) => {
-    e.preventDefault();
-    if (newTask) {
-      console.log(newTask);
-      setTasks((prevState) => [...prevState, newTask]);
+  const taskCollectionRef = collection(db, "tasks");
+
+  // const addTask = (e: any) => {
+  //   e.preventDefault();
+  //   if (newTask) {
+  //     console.log(newTask);
+  //     setTasks((prevState) => [...prevState, newTask]);
+  //   }
+  // };
+
+  const removeTask = async (id: string) => {
+    const taskDoc = doc(db, "tasks", id);
+    await deleteDoc(taskDoc);
+    getTaskList();
+  };
+
+  const getTaskList = async () => {
+    try {
+      const data = await getDocs(taskCollectionRef);
+      const filteredData = data.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setTasks(filteredData);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const removeTask = (el: string) => {
-    console.log(el);
-    const newtasksList = tasks.filter((els) => {
-      return els !== el;
-    });
-    setTasks(newtasksList);
+  const onSubmitTask = async () => {
+    try {
+      await addDoc(taskCollectionRef, {
+        task: newTasks,
+      });
+      getTaskList();
+    } catch (err) {
+      console.error(err);
+    }
   };
+
+  useEffect(() => {
+    getTaskList();
+  }, []);
   return (
     <form
       className="container middle f-column"
@@ -30,9 +68,9 @@ const Form = () => {
         <input
           type="text"
           id="name"
-          onChange={(e) => (newTask = e.target.value)}
+          onChange={(e) => setNewTasks(e.target.value)}
         ></input>
-        <button type="submit" onClick={(e) => addTask(e)}>
+        <button type="submit" onClick={() => onSubmitTask()}>
           Add
         </button>
       </div>
@@ -40,12 +78,12 @@ const Form = () => {
       <p>Todo:</p>
 
       <ul>
-        {tasks.map((el, index) => {
+        {tasks.map((el: any) => {
           return (
             <FormElement
-              key={index}
-              onClickHandler={() => removeTask(el)}
-              task={el}
+              key={el.id}
+              onClickHandler={() => removeTask(el.id)}
+              task={el.task}
             />
           );
         })}
