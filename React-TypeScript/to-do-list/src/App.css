@@ -4,3 +4,13 @@ body {
   align-items: center;
   height: 100vh;
 }
+
+.middle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.f-column {
+  flex-direction: column;
+}
