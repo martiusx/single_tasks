@@ -1,4 +1,4 @@
-const PlaceHolderAPI = "https://jsonplaceholder.typicode.com/users";
+const placeHolderAPI = "https://jsonplaceholder.typicode.com/users";
 
 fetch(PlaceHolderAPI)
   .then((res) => {
